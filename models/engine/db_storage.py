@@ -1,26 +1,26 @@
 #!/usr/bin/python3
-"""This module defines a class to manage database storage for hbnb clone"""
-import os
+"""This is the file storage class for AirBnB"""
 import json
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-import urllib.parse
+import os
 
-from models.base_model import BaseModel, Base
-from models.state import State
-from models.city import City
-from models.user import User
-from models.place import Place
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 from models.amenity import Amenity
+from models.base_model import Base, BaseModel
+from models.city import City
+from models.place import Place
 from models.review import Review
+from models.state import State
+from models.user import User
+
+classes = {"Amenity": Amenity, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class DBStorage:
     """This class serializes instances to a JSON file and
     deserializes JSON file to instances
-    attributeibutes:
-        __file_path: path to the JSON file
-        __objects: objects will be stored
     """
     __engine = None
     __session = None
@@ -54,15 +54,6 @@ class DBStorage:
     def all(self, cls=None):
         """query on the current database session (self.__session) all objects
         epending of the class name (argument cls).
-
-        key = <class-name>.<object-id>
-        value = object
-
-        Args:
-            cls (any, optional): class. Defaults to None.
-
-        Returns:
-            dict: al objects
         """
         new_dict = {}
         for clss in classes:
@@ -84,12 +75,16 @@ class DBStorage:
             self.__session.add(obj)
 
     def save(self):
-        """commits all changes"""
+        """commits all changes of the current database session
+        (self.__session).
+        """
         if self.__session:
             self.__session.commit()
 
     def delete(self, obj=None):
-        """deletes objects from the current database session"""
+        """deletes obj if not none from the current database session
+        (__objects).
+        """
         try:
             self.__session.delete(obj)
         except Exception:
@@ -97,7 +92,6 @@ class DBStorage:
 
     def reload(self):
         """creates all tables in the database (feature of SQLAlchemy)."""
-
         try:
             Base.metadata.create_all(self.__engine)
             session_factory = sessionmaker(bind=self.__engine,
