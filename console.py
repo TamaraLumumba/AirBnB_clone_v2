@@ -293,7 +293,7 @@ class HBNBCommand(cmd.Cmd):
                 if not att_name:
                     print("** attribute name missing **")
                     return
-                if not att_val: 
+                if not att_val:
                     print("** value missing **")
                     return
                 if att_name in HBNBCommand.types:

@@ -67,3 +67,24 @@ class Place(BaseModel, Base):
         """initializes Place"""
         super().__init__(*args, **kwargs)
 
+    if environ.get('HBNB_TYPE_STORAGE') != 'db':
+        @property
+        def reviews(self):
+            """Returns the list of Review instances"""
+            from models.review import Review
+            return [review for review in models.storage.all(Review).values()
+                    if review.place_id == self.id]
+
+        @property
+        def amenities(self):
+            """Returns the list of Amenity instances"""
+            return [amenity for amenity in models.storage.all(Amenity).values()
+                    if amenity.place_id == self.id]
+
+        @amenities.setter
+        def amenities(self, obj):
+            """Handles append method for adding an Amenity.id"""
+            if not isinstance(obj, Amenity):
+                return
+            self.amenity_ids.append(obj.id)
+
